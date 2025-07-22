@@ -7,8 +7,8 @@ apt:
       source: "deb [signed-by=/usr/share/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main"
       keyid: ACCC4CF8
 packages:
-  - "postgresql-${PG_VERSION}"
-  - "postgresql-client-${PG_VERSION}"
+  - "postgresql-$PG_VERSION"
+  - "postgresql-client-$PG_VERSION"
   - openssl
 
 write_files:
@@ -18,8 +18,8 @@ write_files:
       #!/bin/bash
       set -e
 
-      DB_USER="${PG_USER}"
-      DB_PASS="${PG_PASS}"
+      DB_USER="$PG_USER"
+      DB_PASS="$PG_PASS"
 
       if [ -z "$DB_PASS" ]; then
         DB_PASS=$(openssl rand -base64 24)
