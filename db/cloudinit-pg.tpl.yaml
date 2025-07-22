@@ -18,8 +18,8 @@ write_files:
       #!/bin/bash
       set -e
 
-      DB_USER="$PG_USER"
-      DB_PASS="$PG_PASS"
+      DB_USER=$PG_USER
+      DB_PASS=$PG_PASS
 
       if [ -z "$DB_PASS" ]; then
         DB_PASS=$(openssl rand -base64 24)
@@ -32,12 +32,12 @@ write_files:
       if [ "$DB_USER" = "postgres" ]; then
         sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER USER postgres WITH PASSWORD '$DB_PASS';"
       else
-        sudo -u postgres psql -v ON_ERROR_STOP=1 -c "DO $$BEGIN
+        sudo -u postgres psql -v ON_ERROR_STOP=1 -c "DO \$\$BEGIN
           IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$DB_USER')
           THEN CREATE ROLE \"$DB_USER\" WITH LOGIN SUPERUSER PASSWORD '$DB_PASS';
           ELSE ALTER ROLE \"$DB_USER\" WITH PASSWORD '$DB_PASS';
           END IF;
-        END$$;"
+        END\$\$;"
       fi
 
 runcmd:
