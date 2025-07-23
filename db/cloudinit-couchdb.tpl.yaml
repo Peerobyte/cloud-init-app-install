@@ -20,7 +20,7 @@ write_files:
 
       echo "Adding Apache CouchDB repo for Debian $(lsb_release -cs)..."
 
-      curl -fsSL https://couchdb.apache.org/repo/bintray-pubkey.asc | gpg --dearmor -o /usr/share/keyrings/couchdb-keyring.gpg
+      curl -fsSL https://couchdb.apache.org/repo/keys.asc | gpg --dearmor -o /usr/share/keyrings/couchdb-keyring.gpg
 
       echo "deb [signed-by=/usr/share/keyrings/couchdb-keyring.gpg] \
       https://apache.jfrog.io/artifactory/couchdb-deb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/couchdb.list
