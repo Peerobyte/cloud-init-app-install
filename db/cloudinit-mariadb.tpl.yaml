@@ -1,0 +1,20 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+
+runcmd:
+  - |
+    curl -fsSL https://mariadb.org/mariadb_release_signing_key.asc | gpg --dearmor -o /usr/share/keyrings/mariadb-keyring.gpg
+  - |
+    echo "deb [signed-by=/usr/share/keyrings/mariadb-keyring.gpg] \
+      https://mirror.yandex.ru/mariadb/repo/$DB_VERSION/debian bookworm main" \
+      > /etc/apt/sources.list.d/mariadb.list
+  - apt-get update
+  - |
+    DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server mariadb-client
+  - systemctl enable --now mariadb
