@@ -1,0 +1,21 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+  - lsb-release
+
+runcmd:
+  - |
+    curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  - |
+    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] \
+      https://packages.redis.io/deb $(lsb_release -cs) main" \
+      > /etc/apt/sources.list.d/redis.list
+  - apt-get update
+  - |
+    DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server=$DB_VERSION*
+  - systemctl enable --now redis-server
