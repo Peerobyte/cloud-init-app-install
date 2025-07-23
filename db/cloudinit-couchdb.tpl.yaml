@@ -3,10 +3,9 @@ package_update: true
 package_upgrade: false
 
 packages:
-  - gnupg
   - curl
   - ca-certificates
-  - apt-transport-https
+  - gnupg
   - lsb-release
 
 write_files:
@@ -18,12 +17,13 @@ write_files:
 
       DB_VERSION="$DB_VERSION"
 
-      echo "Adding Apache CouchDB repo for Debian $(lsb_release -cs)..."
+      # Импорт ключа CouchDB
+      curl -fsSL https://couchdb.apache.org/repo/keys.asc | gpg --dearmor | tee /usr/share/keyrings/couchdb-archive-keyring.gpg >/dev/null
 
-      curl -fsSL https://couchdb.apache.org/repo/keys.asc | gpg --dearmor -o /usr/share/keyrings/couchdb-keyring.gpg
-
-      echo "deb [signed-by=/usr/share/keyrings/couchdb-keyring.gpg] \
-      https://apache.jfrog.io/artifactory/couchdb-deb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/couchdb.list
+      # Добавление APT-источника
+      source /etc/os-release
+      echo "deb [signed-by=/usr/share/keyrings/couchdb-archive-keyring.gpg] https://apache.jfrog.io/artifactory/couchdb-deb/ ${VERSION_CODENAME} main" \
+        > /etc/apt/sources.list.d/couchdb.list
 
       apt-get update
 
@@ -35,10 +35,7 @@ write_files:
       fi
 
       echo "Installing CouchDB version: $COUCH_FULL_VERSION"
-
       DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=$COUCH_FULL_VERSION
-
-      echo "CouchDB installed. Enabling service..."
 
       systemctl enable --now couchdb
 
