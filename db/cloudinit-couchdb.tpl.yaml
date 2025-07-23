@@ -25,22 +25,19 @@ write_files:
       apt-get update
 
       COUCH_FULL_VERSION=$(apt-cache madison couchdb | grep "$DB_VERSION" | head -n1 | awk '{print $3}')
-
       if [ -z "$COUCH_FULL_VERSION" ]; then
         echo "CouchDB version $DB_VERSION not found"
         exit 1
       fi
 
       echo "Installing CouchDB version: $COUCH_FULL_VERSION"
-
-      echo "couchdb couchdb/mode select standalone" | debconf-set-selections
-      echo "couchdb couchdb/bindaddress string 0.0.0.0" | debconf-set-selections
-      echo "couchdb couchdb/adminpass password admin" | debconf-set-selections
-      echo "couchdb couchdb/adminpass_again password admin" | debconf-set-selections
-
       DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=$COUCH_FULL_VERSION
 
       systemctl enable --now couchdb
 
 runcmd:
+  - echo "couchdb couchdb/mode select standalone" | debconf-set-selections
+  - echo "couchdb couchdb/bindaddress string 0.0.0.0" | debconf-set-selections
+  - echo "couchdb couchdb/adminpass password admin" | debconf-set-selections
+  - echo "couchdb couchdb/adminpass_again password admin" | debconf-set-selections
   - /usr/local/bin/install_couchdb.sh
