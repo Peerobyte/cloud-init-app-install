@@ -1,0 +1,46 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+  - apt-transport-https
+  - lsb-release
+
+write_files:
+  - path: /usr/local/bin/install_couchdb.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_VERSION="$DB_VERSION"
+
+      echo "Adding Apache CouchDB repo for Debian $(lsb_release -cs)..."
+
+      curl -fsSL https://couchdb.apache.org/repo/bintray-pubkey.asc | gpg --dearmor -o /usr/share/keyrings/couchdb-keyring.gpg
+
+      echo "deb [signed-by=/usr/share/keyrings/couchdb-keyring.gpg] \
+      https://apache.jfrog.io/artifactory/couchdb-deb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/couchdb.list
+
+      apt-get update
+
+      COUCH_FULL_VERSION=$(apt-cache madison couchdb | grep "$DB_VERSION" | head -n1 | awk '{print $3}')
+
+      if [ -z "$COUCH_FULL_VERSION" ]; then
+        echo "❌ CouchDB version $DB_VERSION not found"
+        exit 1
+      fi
+
+      echo "Installing CouchDB version: $COUCH_FULL_VERSION"
+
+      DEBIAN_FRONTEND=noninteractive apt-get install -y couchdb=$COUCH_FULL_VERSION
+
+      echo "CouchDB installed. Enabling service..."
+
+      systemctl enable --now couchdb
+
+runcmd:
+  - /usr/local/bin/install_couchdb.sh
