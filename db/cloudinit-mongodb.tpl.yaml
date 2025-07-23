@@ -1,0 +1,20 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+
+runcmd:
+  - |
+    curl -fsSL https://pgp.mongodb.com/server-$DB_VERSION.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-$DB_VERSION.gpg
+  - |
+    echo "deb [signed-by=/usr/share/keyrings/mongodb-server-$DB_VERSION.gpg] \
+      https://repo.mongodb.org/apt/debian bookworm/mongodb-org/$DB_VERSION main" \
+      > /etc/apt/sources.list.d/mongodb-org-$DB_VERSION.list
+  - apt-get update
+  - |
+    DEBIAN_FRONTEND=noninteractive apt-get install -y mongodb-org
+  - systemctl enable --now mongod
