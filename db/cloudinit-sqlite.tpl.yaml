@@ -1,0 +1,16 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+
+runcmd:
+  - apt-get update
+  - |
+    apt-get install -y \
+      sqlite3=$DB_VERSION* \
+      libsqlite3-dev=$DB_VERSION*
+  - systemctl daemon-reexec
