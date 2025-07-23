@@ -30,7 +30,7 @@ write_files:
       COUCH_FULL_VERSION=$(apt-cache madison couchdb | grep "$DB_VERSION" | head -n1 | awk '{print $3}')
 
       if [ -z "$COUCH_FULL_VERSION" ]; then
-        echo "❌ CouchDB version $DB_VERSION not found"
+        echo "CouchDB version $DB_VERSION not found"
         exit 1
       fi
 
