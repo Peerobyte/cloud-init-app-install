@@ -1,45 +1,22 @@
 #cloud-config
 package_update: true
-
-apt:
-  sources:
-    pgdg:
-      source: "deb [signed-by=/usr/share/keyrings/pgdg.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main"
-      keyid: ACCC4CF8
+package_upgrade: false
 packages:
-  - "postgresql-$PG_VERSION"
-  - "postgresql-client-$PG_VERSION"
-  - openssl
-
-write_files:
-  - path: /usr/local/bin/init_pg.sh
-    permissions: "0750"
-    content: |
-      #!/bin/bash
-      set -e
-
-      DB_USER=$PG_USER
-      DB_PASS=$PG_PASS
-
-      if [ -z "$DB_PASS" ]; then
-        DB_PASS=$(openssl rand -base64 24)
-        echo "Generated password for $DB_USER: $DB_PASS" > /root/pg-firstpass.txt
-        chmod 600 /root/pg-firstpass.txt
-      fi
-
-      systemctl is-active --quiet postgresql || systemctl start postgresql
-
-      if [ "$DB_USER" = "postgres" ]; then
-        sudo -u postgres psql -v ON_ERROR_STOP=1 -c "ALTER USER postgres WITH PASSWORD '$DB_PASS';"
-      else
-        sudo -u postgres psql -v ON_ERROR_STOP=1 -c "DO \$\$BEGIN
-          IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$DB_USER')
-          THEN CREATE ROLE \"$DB_USER\" WITH LOGIN SUPERUSER PASSWORD '$DB_PASS';
-          ELSE ALTER ROLE \"$DB_USER\" WITH PASSWORD '$DB_PASS';
-          END IF;
-        END\$\$;"
-      fi
+  - gnupg
+  - curl
+  - ca-certificates
 
 runcmd:
+  - |
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc |
+      gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg
+  - |
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] \
+      https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+      > /etc/apt/sources.list.d/pgdg.list
+  - apt-get update
+  - |
+    apt-get install -y \
+      postgresql-$PG_VERSION \
+      postgresql-contrib-$PG_VERSION
   - systemctl enable --now postgresql
-  - /usr/local/bin/init_pg.sh
