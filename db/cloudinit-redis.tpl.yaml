@@ -7,15 +7,35 @@ packages:
   - curl
   - ca-certificates
   - lsb-release
+  - apt-transport-https
+
+write_files:
+  - path: /usr/local/bin/install_redis.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_VERSION="$DB_VERSION"
+
+      curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+
+      echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] \
+      https://packages.redis.io/deb $(lsb_release -cs) main" > /etc/apt/sources.list.d/redis.list
+
+      apt-get update
+
+      REDIS_FULL_VERSION=$(apt-cache madison redis | grep "$DB_VERSION" | head -n1 | awk '{print $3}')
+
+      if [ -z "$REDIS_FULL_VERSION" ]; then
+        echo "Redis version $DB_VERSION not found in repo"
+        exit 1
+      fi
+
+      echo "Installing redis version: $REDIS_FULL_VERSION"
+      DEBIAN_FRONTEND=noninteractive apt-get install -y redis=$REDIS_FULL_VERSION
+
+      systemctl enable --now redis
 
 runcmd:
-  - |
-    curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
-  - |
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] \
-      https://packages.redis.io/deb $(lsb_release -cs) main" \
-      > /etc/apt/sources.list.d/redis.list
-  - apt-get update
-  - |
-    DEBIAN_FRONTEND=noninteractive apt-get install -y redis-server=$DB_VERSION*
-  - systemctl enable --now redis-server
+  - /usr/local/bin/install_redis.sh
