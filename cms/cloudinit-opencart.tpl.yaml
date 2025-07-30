@@ -1,0 +1,27 @@
+#cloud-config
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - unzip
+  - curl
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_opencart.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      OPENCART_VERSION=$OPENCART_VERSION
+
+      echo "Installing OpenCart $OPENCART_VERSION..."
+      cd /tmp
+      curl -LO https://github.com/opencart/opencart/releases/download/$OPENCART_VERSION/opencart-$OPENCART_VERSION.zip
+      unzip opencart-$OPENCART_VERSION.zip -d /var/www/opencart
+
+      chown -R www-data:www-data /var/www/opencart
+      chmod -R 755 /var/www/opencart
+
+runcmd:
+  - /usr/local/bin/install_opencart.sh

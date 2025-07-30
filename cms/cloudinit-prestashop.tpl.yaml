@@ -1,0 +1,32 @@
+#cloud-config
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - php-curl
+  - php-intl
+  - php-zip
+  - php-dom
+  - php-gd
+  - curl
+  - unzip
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_prestashop.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      PRESTASHOP_VERSION=$PRESTASHOP_VERSION
+
+      echo "Installing PrestaShop $PRESTASHOP_VERSION..."
+      cd /tmp
+      curl -LO https://download.prestashop.com/download/releases/prestashop_$PRESTASHOP_VERSION.zip
+      unzip prestashop_$PRESTASHOP_VERSION.zip -d /var/www/prestashop
+
+      chown -R www-data:www-data /var/www/prestashop
+      chmod -R 755 /var/www/prestashop
+
+runcmd:
+  - /usr/local/bin/install_prestashop.sh

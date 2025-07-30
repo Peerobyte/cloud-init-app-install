@@ -1,0 +1,29 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - openjdk-17-jdk
+  - curl
+  - unzip
+
+write_files:
+  - path: /usr/local/bin/install_spring.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      SPRING_VERSION=$SPRING_VERSION
+
+      echo "Installing Spring Boot CLI $SPRING_VERSION..."
+
+      curl -L "https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/$SPRING_VERSION/spring-boot-cli-$SPRING_VERSION-bin.zip" -o spring.zip
+      unzip spring.zip -d /opt/
+      ln -s /opt/spring-*/bin/spring /usr/local/bin/spring
+
+      echo "Spring Boot CLI $SPRING_VERSION installed" > /var/log/spring-version.txt
+      spring --version >> /var/log/spring-version.txt
+
+runcmd:
+  - /usr/local/bin/install_spring.sh

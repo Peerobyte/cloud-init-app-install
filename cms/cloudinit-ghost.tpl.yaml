@@ -1,0 +1,25 @@
+#cloud-config
+packages:
+  - nodejs
+  - npm
+  - nginx
+  - mysql-server
+  - curl
+
+write_files:
+  - path: /usr/local/bin/install_ghost.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      GHOST_VERSION=$GHOST_VERSION
+
+      echo "Installing Ghost CLI..."
+      npm install -g ghost-cli@$GHOST_VERSION
+
+      mkdir -p /var/www/ghost
+      cd /var/www/ghost
+      ghost install local --no-setup
+
+runcmd:
+  - /usr/local/bin/install_ghost.sh

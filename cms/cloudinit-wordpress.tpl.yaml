@@ -1,0 +1,31 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - curl
+  - unzip
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_wordpress.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      WP_VERSION=$WORDPRESS_VERSION
+
+      echo "Installing WordPress $WP_VERSION..."
+      cd /tmp
+      curl -LO https://wordpress.org/wordpress-$WP_VERSION.tar.gz
+      tar -xzf wordpress-$WP_VERSION.tar.gz
+      mv wordpress /var/www/wordpress
+
+      chown -R www-data:www-data /var/www/wordpress
+      chmod -R 755 /var/www/wordpress
+
+runcmd:
+  - /usr/local/bin/install_wordpress.sh

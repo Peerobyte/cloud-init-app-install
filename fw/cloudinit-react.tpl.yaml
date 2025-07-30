@@ -1,0 +1,28 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - nodejs
+  - npm
+  - curl
+  - git
+
+write_files:
+  - path: /usr/local/bin/install_react.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      REACT_VERSION=$REACT_VERSION
+
+      echo "Installing React $REACT_VERSION..."
+      npm install -g create-react-app
+      npx create-react-app@${REACT_VERSION} /opt/react-app
+
+      echo "React $REACT_VERSION installed" > /var/log/react-version.txt
+      jq '.dependencies.react' /opt/react-app/package.json >> /var/log/react-version.txt
+
+runcmd:
+  - /usr/local/bin/install_react.sh

@@ -1,0 +1,27 @@
+#cloud-config
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - unzip
+  - curl
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_joomla.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      JOOMLA_VERSION=$JOOMLA_VERSION
+
+      echo "Installing Joomla $JOOMLA_VERSION..."
+      cd /tmp
+      curl -LO https://downloads.joomla.org/cms/joomla$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip?format=zip -o joomla.zip
+      unzip joomla.zip -d /var/www/joomla
+
+      chown -R www-data:www-data /var/www/joomla
+      chmod -R 755 /var/www/joomla
+
+runcmd:
+  - /usr/local/bin/install_joomla.sh

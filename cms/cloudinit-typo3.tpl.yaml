@@ -1,0 +1,33 @@
+#cloud-config
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - php-intl
+  - php-xml
+  - php-zip
+  - php-gd
+  - php-json
+  - curl
+  - unzip
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_typo3.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      TYPO3_VERSION=$TYPO3_VERSION
+
+      echo "Installing TYPO3 $TYPO3_VERSION..."
+      cd /tmp
+      curl -LO https://get.typo3.org/$TYPO3_VERSION
+      tar -xzf typo3_src-$TYPO3_VERSION.tar.gz
+      mv typo3_src-$TYPO3_VERSION /var/www/typo3
+
+      chown -R www-data:www-data /var/www/typo3
+      chmod -R 755 /var/www/typo3
+
+runcmd:
+  - /usr/local/bin/install_typo3.sh

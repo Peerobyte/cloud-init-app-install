@@ -1,0 +1,29 @@
+#cloud-config
+packages:
+  - apache2
+  - php
+  - php-mysql
+  - php-xml
+  - php-mbstring
+  - unzip
+  - curl
+  - mariadb-server
+
+write_files:
+  - path: /usr/local/bin/install_concrete.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      CONCRETE_VERSION=$CONCRETE_VERSION
+
+      echo "Installing Concrete CMS $CONCRETE_VERSION..."
+      cd /tmp
+      curl -LO https://www.concretecms.org/download_file/$CONCRETE_VERSION
+      unzip *.zip -d /var/www/concrete
+
+      chown -R www-data:www-data /var/www/concrete
+      chmod -R 755 /var/www/concrete
+
+runcmd:
+  - /usr/local/bin/install_concrete.sh

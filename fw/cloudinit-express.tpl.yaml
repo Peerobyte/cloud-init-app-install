@@ -1,0 +1,32 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - curl
+  - git
+  - nodejs
+  - npm
+
+write_files:
+  - path: /usr/local/bin/install_express.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      EXPRESS_VERSION=$EXPRESS_VERSION
+
+      echo "Installing Express.js $EXPRESS_VERSION..."
+
+      mkdir -p /opt/express-app
+      cd /opt/express-app
+
+      npm init -y
+      npm install express@$EXPRESS_VERSION
+
+      echo "Express $EXPRESS_VERSION installed" > /var/log/express-version.txt
+      node -p "require('express/package.json').version" >> /var/log/express-version.txt
+
+runcmd:
+  - /usr/local/bin/install_express.sh

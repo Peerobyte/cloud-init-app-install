@@ -1,0 +1,27 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - nodejs
+  - npm
+  - curl
+  - git
+
+write_files:
+  - path: /usr/local/bin/install_vue.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      VUE_VERSION=$VUE_VERSION
+
+      echo "Installing Vue CLI $VUE_VERSION..."
+      npm install -g @vue/cli@$VUE_VERSION
+
+      echo "Vue CLI $VUE_VERSION installed" > /var/log/vue-version.txt
+      vue --version >> /var/log/vue-version.txt
+
+runcmd:
+  - /usr/local/bin/install_vue.sh
