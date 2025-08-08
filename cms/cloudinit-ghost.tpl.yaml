@@ -12,10 +12,10 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      GHOST_VERSION=$GHOST_VERSION
+      GHOST_VERSION=$APP_VERSION
 
       echo "Installing Ghost CLI..."
-      npm install -g ghost-cli@$GHOST_VERSION
+      npm install -g ghost-cli@$APP_VERSION
 
       mkdir -p /var/www/ghost
       cd /var/www/ghost

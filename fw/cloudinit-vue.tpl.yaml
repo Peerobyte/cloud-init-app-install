@@ -15,12 +15,12 @@ write_files:
       #!/bin/bash
       set -e
 
-      VUE_VERSION=$VUE_VERSION
+      VUE_VERSION=$APP_VERSION
 
-      echo "Installing Vue CLI $VUE_VERSION..."
-      npm install -g @vue/cli@$VUE_VERSION
+      echo "Installing Vue CLI $APP_VERSION..."
+      npm install -g @vue/cli@$APP_VERSION
 
-      echo "Vue CLI $VUE_VERSION installed" > /var/log/vue-version.txt
+      echo "Vue CLI $APP_VERSION installed" > /var/log/vue-version.txt
       vue --version >> /var/log/vue-version.txt
 
 runcmd:

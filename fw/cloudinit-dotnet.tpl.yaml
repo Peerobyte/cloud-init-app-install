@@ -14,17 +14,17 @@ write_files:
       #!/bin/bash
       set -e
 
-      DOTNET_VERSION=$DOTNET_VERSION
+      DOTNET_VERSION=$APP_VERSION
 
-      echo "Installing .NET SDK $DOTNET_VERSION..."
+      echo "Installing .NET SDK $APP_VERSION..."
 
       wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
       chmod +x dotnet-install.sh
-      ./dotnet-install.sh --version $DOTNET_VERSION --install-dir /opt/dotnet
+      ./dotnet-install.sh --version $APP_VERSION --install-dir /opt/dotnet
 
       ln -s /opt/dotnet/dotnet /usr/local/bin/dotnet
 
-      echo ".NET $DOTNET_VERSION installed" > /var/log/dotnet-version.txt
+      echo ".NET $APP_VERSION installed" > /var/log/dotnet-version.txt
       dotnet --version >> /var/log/dotnet-version.txt
 
 runcmd:

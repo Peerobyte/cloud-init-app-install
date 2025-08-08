@@ -13,11 +13,11 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      JOOMLA_VERSION=$JOOMLA_VERSION
+      JOOMLA_VERSION=$APP_VERSION
 
-      echo "Installing Joomla $JOOMLA_VERSION..."
+      echo "Installing Joomla $APP_VERSION..."
       cd /tmp
-      curl -LO https://downloads.joomla.org/cms/joomla$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip?format=zip -o joomla.zip
+      curl -LO https://downloads.joomla.org/cms/joomla$APP_VERSION/Joomla_$APP_VERSION-Stable-Full_Package.zip?format=zip -o joomla.zip
       unzip joomla.zip -d /var/www/joomla
 
       chown -R www-data:www-data /var/www/joomla

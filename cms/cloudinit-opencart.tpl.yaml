@@ -13,12 +13,12 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      OPENCART_VERSION=$OPENCART_VERSION
+      OPENCART_VERSION=$APP_VERSION
 
-      echo "Installing OpenCart $OPENCART_VERSION..."
+      echo "Installing OpenCart $APP_VERSION..."
       cd /tmp
-      curl -LO https://github.com/opencart/opencart/releases/download/$OPENCART_VERSION/opencart-$OPENCART_VERSION.zip
-      unzip opencart-$OPENCART_VERSION.zip -d /var/www/opencart
+      curl -LO https://github.com/opencart/opencart/releases/download/$APP_VERSION/opencart-$APP_VERSION.zip
+      unzip opencart-$APP_VERSION.zip -d /var/www/opencart
 
       chown -R www-data:www-data /var/www/opencart
       chmod -R 755 /var/www/opencart

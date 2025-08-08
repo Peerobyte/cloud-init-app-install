@@ -17,18 +17,18 @@ write_files:
       #!/bin/bash
       set -e
 
-      DJANGO_VERSION=$DJANGO_VERSION
+      DJANGO_VERSION=$APP_VERSION
 
-      echo "Installing Django version: $DJANGO_VERSION..."
+      echo "Installing Django version: $APP_VERSION..."
 
       python3 -m venv /opt/django-env
       source /opt/django-env/bin/activate
 
       pip install --upgrade pip setuptools
-      pip install django==$DJANGO_VERSION
+      pip install django==$APP_VERSION
 
       django-admin --version > /var/log/django-version.txt
-      echo "Django $DJANGO_VERSION installed in /opt/django-env"
+      echo "Django $APP_VERSION installed in /opt/django-env"
 
 runcmd:
   - /usr/local/bin/install_django.sh

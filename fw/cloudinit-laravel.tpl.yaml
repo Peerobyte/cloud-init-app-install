@@ -29,19 +29,19 @@ write_files:
       #!/bin/bash
       set -e
 
-      LARAVEL_VERSION=$LARAVEL_VERSION
+      LARAVEL_VERSION=$APP_VERSION
 
       echo "Installing Composer..."
       curl -sS https://getcomposer.org/installer | php
       mv composer.phar /usr/local/bin/composer
 
-      echo "Creating Laravel project (version $LARAVEL_VERSION)..."
+      echo "Creating Laravel project (version $APP_VERSION)..."
       mkdir -p /var/www/laravel
       cd /var/www/laravel
 
-      composer create-project laravel/laravel="^$LARAVEL_VERSION" .
+      composer create-project laravel/laravel="^$APP_VERSION" .
 
-      echo "Laravel $LARAVEL_VERSION successfully installed" > /var/log/laravel-version.txt
+      echo "Laravel $APP_VERSION successfully installed" > /var/log/laravel-version.txt
       php artisan --version >> /var/log/laravel-version.txt
 
       chown -R www-data:www-data /var/www/laravel

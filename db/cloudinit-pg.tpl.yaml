@@ -17,6 +17,6 @@ runcmd:
   - apt-get update
   - |
     apt-get install -y \
-      postgresql-$PG_VERSION \
-      postgresql-contrib-$PG_VERSION
+      postgresql-$APP_VERSION \
+      postgresql-contrib-$APP_VERSION
   - systemctl enable --now postgresql

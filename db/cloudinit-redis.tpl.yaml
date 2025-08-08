@@ -16,7 +16,7 @@ write_files:
       #!/bin/bash
       set -e
 
-      DB_VERSION="$DB_VERSION"
+      DB_VERSION="$APP_VERSION"
 
       curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
 
@@ -25,10 +25,10 @@ write_files:
 
       apt-get update
 
-      REDIS_FULL_VERSION=$(apt-cache madison redis | grep "$DB_VERSION" | head -n1 | awk '{print $3}')
+      REDIS_FULL_VERSION=$(apt-cache madison redis | grep "$APP_VERSION" | head -n1 | awk '{print $3}')
 
       if [ -z "$REDIS_FULL_VERSION" ]; then
-        echo "Redis version $DB_VERSION not found in repo"
+        echo "Redis version $APP_VERSION not found in repo"
         exit 1
       fi
 

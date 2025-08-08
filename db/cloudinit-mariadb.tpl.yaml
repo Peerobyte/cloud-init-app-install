@@ -12,7 +12,7 @@ runcmd:
     curl -fsSL https://mariadb.org/mariadb_release_signing_key.asc | gpg --dearmor -o /usr/share/keyrings/mariadb-keyring.gpg
   - |
     echo "deb [signed-by=/usr/share/keyrings/mariadb-keyring.gpg] \
-      https://mirror.yandex.ru/mariadb/repo/$DB_VERSION/debian bookworm main" \
+      https://mirror.yandex.ru/mariadb/repo/$APP_VERSION/debian bookworm main" \
       > /etc/apt/sources.list.d/mariadb.list
   - apt-get update
   - |

@@ -15,12 +15,12 @@ write_files:
       #!/bin/bash
       set -e
 
-      ANGULAR_VERSION=$ANGULAR_VERSION
+      ANGULAR_VERSION=$APP_VERSION
 
-      echo "Installing Angular CLI $ANGULAR_VERSION..."
-      npm install -g @angular/cli@$ANGULAR_VERSION
+      echo "Installing Angular CLI $APP_VERSION..."
+      npm install -g @angular/cli@$APP_VERSION
 
-      echo "Angular CLI $ANGULAR_VERSION installed" > /var/log/angular-version.txt
+      echo "Angular CLI $APP_VERSION installed" > /var/log/angular-version.txt
       ng version >> /var/log/angular-version.txt
 
 runcmd:

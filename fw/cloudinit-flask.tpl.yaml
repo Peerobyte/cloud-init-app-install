@@ -17,17 +17,17 @@ write_files:
       #!/bin/bash
       set -e
 
-      FLASK_VERSION=$FLASK_VERSION
+      FLASK_VERSION=$APP_VERSION
 
-      echo "Installing Flask version: $FLASK_VERSION..."
+      echo "Installing Flask version: $APP_VERSION..."
 
       python3 -m venv /opt/flask-env
       source /opt/flask-env/bin/activate
 
       pip install --upgrade pip setuptools
-      pip install flask==$FLASK_VERSION
+      pip install flask==$APP_VERSION
 
-      echo "Flask $FLASK_VERSION installed in /opt/flask-env"
+      echo "Flask $APP_VERSION installed in /opt/flask-env"
       flask --version > /var/log/flask-version.txt
 
 runcmd:

@@ -18,12 +18,12 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      PRESTASHOP_VERSION=$PRESTASHOP_VERSION
+      PRESTASHOP_VERSION=$APP_VERSION
 
-      echo "Installing PrestaShop $PRESTASHOP_VERSION..."
+      echo "Installing PrestaShop $APP_VERSION..."
       cd /tmp
-      curl -LO https://download.prestashop.com/download/releases/prestashop_$PRESTASHOP_VERSION.zip
-      unzip prestashop_$PRESTASHOP_VERSION.zip -d /var/www/prestashop
+      curl -LO https://download.prestashop.com/download/releases/prestashop_$APP_VERSION.zip
+      unzip prestashop_$APP_VERSION.zip -d /var/www/prestashop
 
       chown -R www-data:www-data /var/www/prestashop
       chmod -R 755 /var/www/prestashop

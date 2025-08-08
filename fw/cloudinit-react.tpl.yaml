@@ -15,13 +15,13 @@ write_files:
       #!/bin/bash
       set -e
 
-      REACT_VERSION=$REACT_VERSION
+      REACT_VERSION=$APP_VERSION
 
-      echo "Installing React $REACT_VERSION..."
+      echo "Installing React $APP_VERSION..."
       npm install -g create-react-app
       npx create-react-app@${REACT_VERSION} /opt/react-app
 
-      echo "React $REACT_VERSION installed" > /var/log/react-version.txt
+      echo "React $APP_VERSION installed" > /var/log/react-version.txt
       jq '.dependencies.react' /opt/react-app/package.json >> /var/log/react-version.txt
 
 runcmd:
