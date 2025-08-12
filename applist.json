@@ -34,7 +34,7 @@
       "app_type": "Databases",
       "icon_path": "https://example.com/icons/sqlite.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-sqlite.tpl.yaml",
-      "versions": ["3.50.4"]
+      "versions": ["3.40.1"]
     },
     {
       "name": "CouchDB",
