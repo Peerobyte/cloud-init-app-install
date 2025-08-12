@@ -33,7 +33,7 @@ write_files:
       fi
 
       echo "Installing redis version: $REDIS_FULL_VERSION"
-      DEBIAN_FRONTEND=apt-get install -y \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y \
       "redis=${REDIS_FULL_VERSION}" \
       "redis-server=${REDIS_FULL_VERSION}" \
       "redis-tools=${REDIS_FULL_VERSION}" \
