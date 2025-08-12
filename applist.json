@@ -43,75 +43,76 @@
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-couchdb.tpl.yaml",
       "versions": ["3.5.0"]
     },
+
     {
       "name": "Angular",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/angular.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-angular.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["20.1.5"]
     },
     {
       "name": "Django",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/django.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-django.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["5.2.5"]
     },
     {
       "name": ".NET",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/dotnet.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-dotnet.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["9.0.8"]
     },
     {
       "name": "Express.js",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/express.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-express.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["5.1.0"]
     },
     {
       "name": "Flask",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/flask.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-flask.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["3.1.1"]
     },
     {
       "name": "Laravel",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/laravel.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-laravel.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["12"]
     },
     {
       "name": "Ruby on Rails",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/rails.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-rails.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["8.0.2"]
     },
     {
       "name": "React",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/react.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-react.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["19.1.1"]
     },
     {
       "name": "Spring",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/spring.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-spring.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["3.5.4"]
     },
     {
       "name": "Vue.js",
       "app_type": "Frameworks",
       "icon_path": "https://example.com/icons/vue.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-vue.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["3.5.18"]
     },
 
     {
@@ -119,63 +120,63 @@
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/concrete5.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-concrete5.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["9.4.3"]
     },
     {
       "name": "Drupal",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/drupal.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-drupal.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["11.1.8"]
     },
     {
       "name": "Ghost",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/ghost.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-ghost.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["6.0.0"]
     },
     {
       "name": "Joomla!",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/joomla.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-joomla.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["5.3.2"]
     },
     {
       "name": "Magento Open Source",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/magento.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-magento.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["2.4.8"]
     },
     {
       "name": "OpenCart",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/opencart.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-opencart.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["4.1.0.3"]
     },
     {
       "name": "PrestaShop",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/prestashop.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-prestashop.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["9.0.0"]
     },
     {
       "name": "TYPO3",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/typo3.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-typo3.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["13.4.16"]
     },
     {
       "name": "WordPress",
       "app_type": "CMS",
       "icon_path": "https://example.com/icons/wordpress.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-wordpress.tpl.yaml",
-      "versions": ["latest"]
+      "versions": ["6.8.2"]
     }
   ]
 }
