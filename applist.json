@@ -43,7 +43,14 @@
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-couchdb.tpl.yaml",
       "versions": ["3.5.0"]
     },
-
+    {
+      "name": "FerretDB",
+      "app_type": "Databases",
+      "icon_path": "https://example.com/icons/ferretdb.png",
+      "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-ferretdb.tpl.yaml",
+      "versions": ["2.5.0"]
+    },
+    
     {
       "name": "Angular",
       "app_type": "Frameworks",
