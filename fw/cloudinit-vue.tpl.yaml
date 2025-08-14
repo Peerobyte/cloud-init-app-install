@@ -17,10 +17,10 @@ write_files:
 
       VUE_VERSION=$APP_VERSION
 
-      echo "Installing Vue CLI $APP_VERSION..."
-      npm install -g @vue/cli@$APP_VERSION
-
-      echo "Vue CLI $APP_VERSION installed" > /var/log/vue-version.txt
+      echo "Installing Vue  $APP_VERSION..."
+      npm create vue@$APP_VERSION my-app -- --default
+    
+      echo "Vue $APP_VERSION installed" > /var/log/vue-version.txt
       vue --version >> /var/log/vue-version.txt
 
 runcmd:
