@@ -1,0 +1,95 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+packages:
+  - gnupg
+  - curl
+  - ca-certificates
+  - lsb-release
+  - openssl
+
+runcmd:
+  - |
+    set -euxo pipefail
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-archive-keyring.gpg
+  - |
+    set -euxo pipefail
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-archive-keyring.gpg] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+  - apt-get update
+
+  - |
+    set -euxo pipefail
+    apt-get install -y \
+      postgresql-17 \
+      postgresql-contrib-17 \
+      postgresql-17-cron \
+      postgresql-17-pgvector \
+      postgresql-17-postgis-3 \
+      postgresql-17-rum
+
+  - |
+    set -euxo pipefail
+    curl -fL -o /tmp/documentdb.deb https://github.com/microsoft/documentdb/releases/download/v0.104-0/deb12-postgresql-17-documentdb_0.103.0_amd64.deb
+    ln -sf /tmp/documentdb.deb /tmp/documentdb
+    apt-get install -y /tmp/documentdb.deb
+
+  - systemctl enable --now postgresql
+
+  - |
+    set -euxo pipefail
+    CONF_FILE="/etc/postgresql/17/main/postgresql.conf"
+    cat <<'EOF' >> "$CONF_FILE"
+
+    shared_preload_libraries = 'pg_cron,pg_documentdb_core,pg_documentdb'
+    cron.database_name = 'postgres'
+
+    documentdb.enableCompact = true
+    documentdb.enableLetAndCollationForQueryMatch = true
+    documentdb.enableNowSystemVariable = true
+    documentdb.enableSortbyIdPushDownToPrimaryKey = true
+
+    documentdb.enableSchemaValidation = true
+    documentdb.enableBypassDocumentValidation = true
+
+    documentdb.enableUserCrud = true
+    documentdb.maxUserLimit = 100
+    EOF
+    systemctl restart postgresql
+
+  - |
+    set -euxo pipefail
+    DB_PASS="$(openssl rand -hex 24)"          # URL-safe пароль (hex)
+    printf '%s\n' "$DB_PASS" > /root/db_pass.txt
+    chmod 600 /root/db_pass.txt
+    runuser -u postgres -- psql -d postgres -c "CREATE EXTENSION IF NOT EXISTS documentdb CASCADE;"
+    runuser -u postgres -- psql -d postgres -c "ALTER ROLE postgres WITH PASSWORD '${DB_PASS}';"
+
+  - |
+    set -euxo pipefail
+    curl -fL -o /tmp/ferretdb.deb https://github.com/FerretDB/FerretDB/releases/download/v2.5.0/ferretdb-amd64-linux.deb
+    ln -sf /tmp/ferretdb.deb /tmp/ferretdb
+    apt-get install -y /tmp/ferretdb.deb
+
+  - |
+    set -euxo pipefail
+    cat > /etc/systemd/system/ferretdb.service <<EOF
+    [Unit]
+    Description=FerretDB Database
+    Documentation=https://docs.ferretdb.io/
+    Wants=network-online.target
+    After=network-online.target
+
+    [Service]
+    ExecStart=/usr/bin/ferretdb
+    Restart=on-failure
+
+    # Configure the FerretDB service with `systemctl edit ferretdb`.
+    # For more configuration options check https://docs.ferretdb.io/configuration/flags/
+    Environment=FERRETDB_HANDLER=postgresql
+    Environment="FERRETDB_POSTGRESQL_URL=postgres://postgres:${DB_PASS}@127.0.0.1:5432/postgres?sslmode=disable"
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+    systemctl daemon-reload
+    systemctl enable --now ferretdb
