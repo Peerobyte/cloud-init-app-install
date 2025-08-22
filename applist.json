@@ -6,182 +6,260 @@
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/mongodb.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-mongodb.tpl.yaml",
-      "versions": ["7.0", "8.0"]
+      "versions": ["7.0", "8.0"],
+      "min_cpu": 2,
+      "min_ram_gib": 2,
+      "min_storage_gb": 20
     },
     {
       "name": "MariaDB",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/mariadb.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-mariadb.tpl.yaml",
-      "versions": ["11.8.2", "10.11.13", "12.0.1"]
+      "versions": ["11.8.2", "10.11.13", "12.0.1"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "PostgreSQL",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/postgresql.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-pg.tpl.yaml",
-      "versions": ["14", "15", "16", "17"]
+      "versions": ["14", "15", "16", "17"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Redis",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/redis.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-redis.tpl.yaml",
-      "versions": ["7", "8.1"]
+      "versions": ["7", "8.1"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "SQLite",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/sqlite.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-sqlite.tpl.yaml",
-      "versions": ["3.40.1"]
+      "versions": ["3.40.1"],
+      "min_cpu": 1,
+      "min_ram_gib": 0.25,
+      "min_storage_gb": 1
     },
     {
       "name": "CouchDB",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/couchdb.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-couchdb.tpl.yaml",
-      "versions": ["3.5.0"]
+      "versions": ["3.5.0"],
+      "min_cpu": 2,
+      "min_ram_gib": 4,
+      "min_storage_gb": 20
     },
     {
       "name": "FerretDB",
       "app_type": "Databases",
       "icon_path": "/asset/image/icons/ferretdb.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/db/cloudinit-ferretdb.tpl.yaml",
-      "versions": ["2.5.0"]
+      "versions": ["2.5.0"],
+      "min_cpu": 2,
+      "min_ram_gib": 2,
+      "min_storage_gb": 10
     },
     {
       "name": "Angular",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/angular.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-angular.tpl.yaml",
-      "versions": ["20.1.5"]
+      "versions": ["20.1.5"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Django",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/django.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-django.tpl.yaml",
-      "versions": ["5.2.5"]
+      "versions": ["5.2.5"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": ".NET",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/dotnet.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-dotnet.tpl.yaml",
-      "versions": ["9.0.8"]
+      "versions": ["9.0.8"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Express.js",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/express.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-express.tpl.yaml",
-      "versions": ["5.1.0"]
+      "versions": ["5.1.0"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Flask",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/flask.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-flask.tpl.yaml",
-      "versions": ["3.1.1"]
+      "versions": ["3.1.1"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Laravel",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/laravel.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-laravel.tpl.yaml",
-      "versions": ["12"]
+      "versions": ["12"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Ruby on Rails",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/rails.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-rails.tpl.yaml",
-      "versions": ["8.0.2"]
+      "versions": ["8.0.2"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "React",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/react.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-react.tpl.yaml",
-      "versions": ["19.1.1"]
+      "versions": ["19.1.1"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Spring",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/spring.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-spring.tpl.yaml",
-      "versions": ["3.5.4"]
+      "versions": ["3.5.4"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Vue.js",
       "app_type": "Frameworks",
       "icon_path": "/asset/image/icons/vue.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/fw/cloudinit-vue.tpl.yaml",
-      "versions": ["3.5.18"]
+      "versions": ["3.5.18"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Concrete CMS",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/concrete5.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-concrete5.tpl.yaml",
-      "versions": ["9.4.3"]
+      "versions": ["9.4.3"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Drupal",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/drupal.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-drupal.tpl.yaml",
-      "versions": ["11.1.8"]
+      "versions": ["11.1.8"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Ghost",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/ghost.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-ghost.tpl.yaml",
-      "versions": ["6.0.0"]
+      "versions": ["6.0.0"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 5
     },
     {
       "name": "Joomla!",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/joomla.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-joomla.tpl.yaml",
-      "versions": ["5.3.2"]
+      "versions": ["5.3.2"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "Magento Open Source",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/magento.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-magento.tpl.yaml",
-      "versions": ["2.4.8"]
+      "versions": ["2.4.8"],
+      "min_cpu": 2,
+      "min_ram_gib": 2,
+      "min_storage_gb": 20
     },
     {
       "name": "OpenCart",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/opencart.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-opencart.tpl.yaml",
-      "versions": ["4.1.0.3"]
+      "versions": ["4.1.0.3"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "PrestaShop",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/prestashop.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-prestashop.tpl.yaml",
-      "versions": ["9.0.0"]
+      "versions": ["9.0.0"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "TYPO3",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/typo3.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-typo3.tpl.yaml",
-      "versions": ["13.4.16"]
+      "versions": ["13.4.16"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     },
     {
       "name": "WordPress",
       "app_type": "CMS",
       "icon_path": "/asset/image/icons/wordpress.png",
       "cloud_init_url": "https://raw.githubusercontent.com/Peerobyte/cloud-init-app-install/refs/heads/main/cms/cloudinit-wordpress.tpl.yaml",
-      "versions": ["6.8.2"]
+      "versions": ["6.8.2"],
+      "min_cpu": 1,
+      "min_ram_gib": 1,
+      "min_storage_gb": 10
     }
   ]
 }
