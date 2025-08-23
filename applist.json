@@ -39,7 +39,7 @@
       "versions": ["7", "8.1"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "SQLite",
@@ -49,7 +49,7 @@
       "versions": ["3.40.1"],
       "min_cpu": 1,
       "min_ram_gib": 0.25,
-      "min_storage_gb": 1
+      "min_storage_gb": 10
     },
     {
       "name": "CouchDB",
@@ -79,7 +79,7 @@
       "versions": ["20.1.5"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Django",
@@ -89,7 +89,7 @@
       "versions": ["5.2.5"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": ".NET",
@@ -99,7 +99,7 @@
       "versions": ["9.0.8"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Express.js",
@@ -109,7 +109,7 @@
       "versions": ["5.1.0"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Flask",
@@ -119,7 +119,7 @@
       "versions": ["3.1.1"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Laravel",
@@ -149,7 +149,7 @@
       "versions": ["19.1.1"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Spring",
@@ -169,7 +169,7 @@
       "versions": ["3.5.18"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Concrete CMS",
@@ -199,7 +199,7 @@
       "versions": ["6.0.0"],
       "min_cpu": 1,
       "min_ram_gib": 1,
-      "min_storage_gb": 5
+      "min_storage_gb": 10
     },
     {
       "name": "Joomla!",
