@@ -27,7 +27,7 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      WP_VERSION=${APP_VERSION}
+      WP_VERSION=$APP_VERSION
 
       echo "Installing WordPress $WP_VERSION..."
       mkdir -p /var/www/
