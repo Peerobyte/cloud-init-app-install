@@ -18,7 +18,7 @@ write_files:
 
       echo "Installing Spring Boot CLI $APP_VERSION..."
 
-      curl -L "https://repo.spring.io/release/org/springframework/boot/spring-boot-cli/$APP_VERSION/spring-boot-cli-$APP_VERSION-bin.zip" -o spring.zip
+      curl -L "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-cli/$APP_VERSION/spring-boot-cli-$APP_VERSION-bin.zip" -o spring.zip
       unzip spring.zip -d /opt/
       ln -s /opt/spring-*/bin/spring /usr/local/bin/spring
 
