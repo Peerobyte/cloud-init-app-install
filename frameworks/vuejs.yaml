@@ -3,8 +3,6 @@ package_update: true
 package_upgrade: false
 
 packages:
-  - nodejs
-  - npm
   - curl
   - git
 
@@ -17,11 +15,19 @@ write_files:
 
       VUE_VERSION=$APP_VERSION
 
-      echo "Installing Vue  $APP_VERSION..."
-      npm create vue@$APP_VERSION my-app -- --default
-    
+      echo "Installing Vue $APP_VERSION..."
+
+      npm install -g create-vue
+
+      create-vue my-app --default
+
+      cd my-app
+      npm install vue@$APP_VERSION
+
       echo "Vue $APP_VERSION installed" > /var/log/vue-version.txt
-      vue --version >> /var/log/vue-version.txt
+      npm list vue >> /var/log/vue-version.txt
 
 runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
   - /usr/local/bin/install_vue.sh
