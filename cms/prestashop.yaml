@@ -1,4 +1,7 @@
 #cloud-config
+package_update: true
+package_upgrade: false
+
 packages:
   - apache2
   - php
@@ -8,6 +11,7 @@ packages:
   - php-zip
   - php-dom
   - php-gd
+  - php-mbstring
   - curl
   - unzip
   - mariadb-server
@@ -20,13 +24,82 @@ write_files:
       set -e
       PRESTASHOP_VERSION=$APP_VERSION
 
-      echo "Installing PrestaShop $APP_VERSION..."
+      echo "Installing PrestaShop $PRESTASHOP_VERSION..."
       cd /tmp
-      curl -LO https://download.prestashop.com/download/releases/prestashop_$APP_VERSION.zip
-      unzip prestashop_$APP_VERSION.zip -d /var/www/prestashop
+      curl -LO https://github.com/PrestaShop/PrestaShop/releases/download/$PRESTASHOP_VERSION/prestashop_$PRESTASHOP_VERSION.zip
+      unzip prestashop_$PRESTASHOP_VERSION.zip -d /var/www/prestashop
+
+      unzip -o /var/www/prestashop/prestashop.zip -d /var/www/prestashop
 
       chown -R www-data:www-data /var/www/prestashop
       chmod -R 755 /var/www/prestashop
 
+      a2enmod rewrite
+
+  - path: /usr/local/bin/auto_prestashop.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+      DB_PASS=$(cat /.mysql_pass)
+      ADMIN_PASS=$(cat /.admin_pass)
+
+      php /var/www/prestashop/install/index_cli.php --domain="$URL" --db_server=localhost  --db_user=prestashop_user --db_password="$DB_PASS" --email=admin@example.com --firstname=Admin --lastname=Admin --password="$ADMIN_PASS"
+      rm -rf /var/www/prestashop/install
+
+  - path: /etc/apache2/sites-available/prestashop.conf
+    permissions: "0644"
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /var/www/prestashop
+
+          <Directory /var/www/prestashop>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/error.log
+          CustomLog ${APACHE_LOG_DIR}/access.log combined
+      </VirtualHost>
+
+  - path: /usr/local/bin/setup_mysql_prestashop_user.sh
+    permissions: "0700"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_NAME="prestashop"
+      DB_USER="prestashop_user"
+
+      DB_PASS=$(openssl rand -base64 16 | tr -dc 'A-Za-z0-9' | head -c 16)
+      PASS_FILE="/.mysql_pass"
+
+      echo "$DB_PASS" > "$PASS_FILE"
+
+
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+  - path: /usr/local/bin/setup_admin_password.sh
+    permissions: "0700"
+    content: |
+      #!/bin/bash
+      set -e
+
+      ADMIN_PASS=$(openssl rand -base64 16 | tr -dc 'A-Za-z0-9' | head -c 16)!
+
+
+      echo "$ADMIN_PASS" > /.admin_pass
+
 runcmd:
+  - /usr/local/bin/setup_mysql_prestashop_user.sh
+  - /usr/local/bin/setup_admin_password.sh
   - /usr/local/bin/install_prestashop.sh
+  - /usr/local/bin/auto_prestashop.sh
+  - a2dissite 000-default.conf
+  - a2ensite prestashop.conf
+  - systemctl reload apache2
