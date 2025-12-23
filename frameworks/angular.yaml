@@ -3,8 +3,6 @@ package_update: true
 package_upgrade: false
 
 packages:
-  - nodejs
-  - npm
   - curl
   - git
 
@@ -24,4 +22,6 @@ write_files:
       ng version >> /var/log/angular-version.txt
 
 runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
   - /usr/local/bin/install_angular.sh
