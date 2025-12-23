@@ -1,11 +1,18 @@
 #cloud-config
+package_update: true
+package_upgrade: false
+
 packages:
   - apache2
-  - php
-  - php-mysql
+  - software-properties-common
   - unzip
   - curl
   - mariadb-server
+  - apt-transport-https
+  - lsb-release
+  - ca-certificates
+  - curl
+  - gnupg2
 
 write_files:
   - path: /usr/local/bin/install_drupal.sh
@@ -15,14 +22,100 @@ write_files:
       set -e
       DRUPAL_VERSION=$APP_VERSION
 
-      echo "Installing Drupal $APP_VERSION..."
+      echo "Installing Drupal $DRUPAL_VERSION..."
       cd /tmp
-      curl -LO https://ftp.drupal.org/files/projects/drupal-$APP_VERSION.tar.gz
-      tar -xzf drupal-$APP_VERSION.tar.gz
-      mv drupal-$APP_VERSION /var/www/drupal
+      curl -LO https://ftp.drupal.org/files/projects/drupal-$DRUPAL_VERSION.tar.gz
+      tar -xzf drupal-$DRUPAL_VERSION.tar.gz
+      mv drupal-$DRUPAL_VERSION /var/www/drupal
 
       chown -R www-data:www-data /var/www/drupal
       chmod -R 755 /var/www/drupal
 
+
+  - path: /usr/local/bin/install_composer.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      export HOME="/tmp"
+      cd /var/www/drupal
+      php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+      php composer-setup.php
+      php -r "unlink('composer-setup.php');"
+      mv composer.phar composer
+      chmod +x composer
+      chown www-data:www-data composer
+      sudo -u www-data ./composer require drush/drush
+
+
+  - path: /usr/local/bin/setup_mysql_drupal_user.sh
+    permissions: "0700"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_NAME="drupal_db"
+      DB_USER="drupal_user"
+      DB_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
+      PASS_FILE="/.mysql_pass"
+
+      echo "$DB_PASS" > "$PASS_FILE"
+
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+
+  - path: /usr/local/bin/setup_drupal.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      ADMIN_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
+      ADMIN_PASS_FILE="/.admin_pass"
+
+      echo "$ADMIN_PASS" > "$ADMIN_PASS_FILE"
+
+      DB_PASS=$(cat /.mysql_pass)
+
+      cd /var/www/drupal
+      sudo -u www-data ./vendor/bin/drush site:install standard \
+      --db-url="mysql://drupal_user:$DB_PASS@localhost/drupal_db" \
+      --site-name="example" \
+      --account-name=admin \
+      --account-pass="$ADMIN_PASS" \
+      --account-mail=admin@example.com \
+      -y
+
+
+  - path: /etc/apache2/sites-available/drupal.conf
+    permissions: "0644"
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /var/www/drupal
+
+          <Directory /var/www/drupal>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/error.log
+          CustomLog ${APACHE_LOG_DIR}/access.log combined
+      </VirtualHost>
+
 runcmd:
+  - curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/php.gpg
+  - echo "deb [signed-by=/usr/share/keyrings/php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+  - apt-get update
+  - apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-mysql php8.3-xml php8.3-mbstring php8.3-curl php8.3-gd php8.3-opcache php8.3-zip libapache2-mod-php8.3
   - /usr/local/bin/install_drupal.sh
+  - /usr/local/bin/setup_mysql_drupal_user.sh
+  - /usr/local/bin/install_composer.sh
+  - /usr/local/bin/setup_drupal.sh
+  - a2dissite 000-default.conf
+  - a2ensite drupal.conf
+  - a2enmod rewrite
+  - systemctl reload apache2
