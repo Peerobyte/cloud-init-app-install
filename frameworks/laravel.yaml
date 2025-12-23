@@ -28,7 +28,9 @@ write_files:
     content: |
       #!/bin/bash
       set -e
+      
 
+      export HOME=/tmp
       LARAVEL_VERSION=$APP_VERSION
 
       echo "Installing Composer..."
