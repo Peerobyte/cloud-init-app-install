@@ -1,27 +1,100 @@
 #cloud-config
+
+package_update: true
+package_upgrade: false
+
 packages:
   - apache2
   - php
   - php-mysql
+  - php-curl
+  - php-zip
+  - php-gd
+  - php-mbstring
   - unzip
   - curl
   - mariadb-server
 
 write_files:
-  - path: /usr/local/bin/install_opencart.sh
+  - path: /usr/local/bin/setup_opencart.sh
     permissions: "0755"
     content: |
       #!/bin/bash
       set -e
-      OPENCART_VERSION=$APP_VERSION
 
-      echo "Installing OpenCart $APP_VERSION..."
+      export DEBIAN_FRONTEND=noninteractive
+
+      OPENCART_VERSION="4.0.2.3"
+      OC_PATH="/var/www/opencart"
+      DB_NAME="opencart_db"
+      DB_USER="opencart_user"
+      DB_PASS=$(openssl rand -base64 16 | tr -d -c '[:alnum:]')
+      PASS_FILE="/.mysql_pass"
+      ADMINPASS=$(openssl rand -base64 16 | head -c 20)
+
+      echo "$DB_PASS" > "$PASS_FILE"
+      echo "$ADMINPASS" > "/.admin_pass"
+
+      echo "Creating database and user..."
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON \`$DB_NAME\`.* TO '$DB_USER'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+      echo "Downloading OpenCart..."
       cd /tmp
-      curl -LO https://github.com/opencart/opencart/releases/download/$APP_VERSION/opencart-$APP_VERSION.zip
-      unzip opencart-$APP_VERSION.zip -d /var/www/opencart
+      curl -LO https://github.com/opencart/opencart/releases/download/${OPENCART_VERSION}/opencart-${OPENCART_VERSION}.zip
+      unzip opencart-${OPENCART_VERSION}.zip
+      mv opencart-${OPENCART_VERSION}/upload "$OC_PATH"
 
-      chown -R www-data:www-data /var/www/opencart
-      chmod -R 755 /var/www/opencart
+      echo "Setting permissions..."
+      chown -R www-data:www-data "$OC_PATH"
+      chmod -R 755 "$OC_PATH"
+
+      echo "Preparing config files..."
+      cp "$OC_PATH/config-dist.php" "$OC_PATH/config.php"
+      cp "$OC_PATH/admin/config-dist.php" "$OC_PATH/admin/config.php"
+      chmod 666 "$OC_PATH/config.php" "$OC_PATH/admin/config.php"
+
+      echo "Running OpenCart CLI installer..."
+      php "$OC_PATH/install/cli_install.php" install \
+        --username admin \
+        --email admin@example.com \
+        --password "$ADMINPASS" \
+        --http_server http://$URL/ \
+        --db_driver mysqli \
+        --db_hostname localhost \
+        --db_username "$DB_USER" \
+        --db_password "$DB_PASS" \
+        --db_database "$DB_NAME" \
+        --db_prefix oc_
+
+      echo "Securing config files..."
+      chmod 644 "$OC_PATH/config.php" "$OC_PATH/admin/config.php"
+      rm -rf "$OC_PATH/install"
+
+      echo "OpenCart installation complete."
+
+  - path: /etc/apache2/sites-available/opencart.conf
+    permissions: "0644"
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /var/www/opencart
+
+          <Directory /var/www/opencart>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/opencart_error.log
+          CustomLog ${APACHE_LOG_DIR}/opencart_access.log combined
+      </VirtualHost>
 
 runcmd:
-  - /usr/local/bin/install_opencart.sh
+  - /usr/local/bin/setup_opencart.sh
+  - a2dissite 000-default.conf
+  - a2ensite opencart.conf
+  - a2enmod rewrite
+  - systemctl reload apache2
