@@ -1,4 +1,7 @@
 #cloud-config
+package_update: true
+package_upgrade: false
+
 packages:
   - apache2
   - php
@@ -8,6 +11,7 @@ packages:
   - php-zip
   - php-gd
   - php-json
+  - php-mbstring
   - curl
   - unzip
   - mariadb-server
@@ -20,14 +24,98 @@ write_files:
       set -e
       TYPO3_VERSION=$APP_VERSION
 
-      echo "Installing TYPO3 $APP_VERSION..."
+      echo "Installing TYPO3 $TYPO3_VERSION..."
       cd /tmp
-      curl -LO https://get.typo3.org/$APP_VERSION
-      tar -xzf typo3_src-$APP_VERSION.tar.gz
-      mv typo3_src-$APP_VERSION /var/www/typo3
+      curl -L https://get.typo3.org/$TYPO3_VERSION -o typo3_src-$TYPO3_VERSION.tar.gz
+      tar -xzf typo3_src-$TYPO3_VERSION.tar.gz
+      mv typo3_src-$TYPO3_VERSION /var/www/typo3
+
+      mkdir -p /var/www/typo3/typo3conf
 
       chown -R www-data:www-data /var/www/typo3
       chmod -R 755 /var/www/typo3
 
+      a2enmod rewrite
+
+  - path: /usr/local/bin/setup_mysql_typo3_user.sh
+    permissions: "0700"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_NAME="typo3_db"
+      DB_USER="typo3_user"
+
+      DB_PASS=$(openssl rand -base64 16 | tr -d -c '[:alnum:]')
+      PASS_FILE="/.mysql_pass"
+
+      echo "$DB_PASS" > "$PASS_FILE"
+      chmod 600 "$PASS_FILE"
+
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+  - path: /etc/php/8.2/apache2/conf.d/99-typo3.ini
+    permissions: "0644"
+    content: |
+      max_execution_time = 240
+      max_input_vars = 1500
+
+  - path: /usr/local/bin/auto_install.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_PASSWORD=$(< /.mysql_pass)
+      if [ -z "$DB_PASSWORD" ]; then
+        echo "ERROR: MySQL password is empty!" >&2
+        exit 1
+      fi
+
+      TYPO3_SETUP_ADMIN_PASSWORD=$(openssl rand -base64 16)
+
+      sudo -u www-data /var/www/typo3/typo3/sysext/core/bin/typo3 setup \
+        --no-interaction \
+        --server-type=apache \
+        --driver=mysqli \
+        --host=localhost \
+        --port=3306 \
+        --username=typo3_user \
+        --password="$DB_PASSWORD" \
+        --dbname=typo3_db \
+        --admin-username=admin \
+        --admin-user-password="$TYPO3_SETUP_ADMIN_PASSWORD" \
+        --admin-email=admin@examle.com \
+        --project-name="My TYPO3 Project" \
+        --create-site=$URL && \
+
+      ADMIN_PASS_FILE="/.admin_pass"
+      echo "$TYPO3_SETUP_ADMIN_PASSWORD" >> "$ADMIN_PASS_FILE"
+
+  - path: /etc/apache2/sites-available/typo3.conf
+    permissions: "0644"
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /var/www/typo3
+
+          <Directory /var/www/typo3>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/typo3_error.log
+          CustomLog ${APACHE_LOG_DIR}/typo3_access.log combined
+      </VirtualHost>
+
 runcmd:
   - /usr/local/bin/install_typo3.sh
+  - /usr/local/bin/setup_mysql_typo3_user.sh
+  - /usr/local/bin/auto_install.sh
+  - a2dissite 000-default.conf
+  - a2ensite typo3.conf
+  - systemctl reload apache2
