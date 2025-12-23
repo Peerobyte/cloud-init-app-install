@@ -1,8 +1,18 @@
 #cloud-config
+
+package_update: true
+package_upgrade: false
+
 packages:
   - apache2
   - php
   - php-mysql
+  - php-mbstring
+  - php-xml
+  - php-zip
+  - php-gd
+  - php-curl
+  - php-intl
   - unzip
   - curl
   - mariadb-server
@@ -13,15 +23,101 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      JOOMLA_VERSION=$APP_VERSION
+
+
+      JOOMLA_VERSION="${APP_VERSION//./-}"
+      MAJOR_VERSION=$(echo "$APP_VERSION" | cut -d'.' -f1)
 
       echo "Installing Joomla $APP_VERSION..."
       cd /tmp
-      curl -LO https://downloads.joomla.org/cms/joomla$APP_VERSION/Joomla_$APP_VERSION-Stable-Full_Package.zip?format=zip -o joomla.zip
+      curl -fL https://downloads.joomla.org/cms/joomla$MAJOR_VERSION/$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip -o joomla.zip
       unzip joomla.zip -d /var/www/joomla
 
       chown -R www-data:www-data /var/www/joomla
       chmod -R 755 /var/www/joomla
 
+  - path: /usr/local/bin/setup_mysql_joomla_user.sh
+    permissions: "0700"
+    content: |
+      #!/bin/bash
+      set -e
+
+      DB_NAME="joomla_db"
+      DB_USER="joomla_user"
+
+      DB_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
+      PASS_FILE="/.mysql_pass"
+
+      echo "$DB_PASS" > "$PASS_FILE"
+
+      mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+      mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+      mysql -u root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+      mysql -u root -e "FLUSH PRIVILEGES;"
+
+  - path: /usr/local/bin/install_joomla_cli.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      SITE_NAME="My Joomla Site"
+      ADMIN_USER="admin"
+
+      ADMIN_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
+      ADMIN_EMAIL="admin@example.com"
+
+      DB_TYPE="mysqli"
+      DB_HOST="localhost"
+      DB_USER="joomla_user"
+      DB_PASS_FILE="/.mysql_pass"
+      DB_PASS=$(cat "$DB_PASS_FILE")
+      DB_NAME="joomla_db"
+
+      ADMIN_PASS_FILE="/.admin_pass"
+      echo "$ADMIN_PASS" > "$ADMIN_PASS_FILE"
+
+      chown -R www-data:www-data /var/www/joomla
+
+      echo "Starting Joomla CLI installation..."
+
+      sudo -u www-data php /var/www/joomla/installation/joomla.php install \
+        --site-name="$SITE_NAME" \
+        --admin-user="$ADMIN_USER" \
+        --admin-username="admin" \
+        --admin-password="$ADMIN_PASS" \
+        --admin-email="$ADMIN_EMAIL" \
+        --db-type="$DB_TYPE" \
+        --db-host="$DB_HOST" \
+        --db-user="$DB_USER" \
+        --db-pass="$DB_PASS" \
+        --db-name="$DB_NAME" \
+        -n
+
+      echo "Joomla CLI installation completed."
+
+  - path: /etc/apache2/sites-available/joomla.conf
+    permissions: "0644"
+    content: |
+      <VirtualHost *:80>
+          ServerAdmin webmaster@localhost
+          DocumentRoot /var/www/joomla
+
+          <Directory /var/www/joomla>
+              Options Indexes FollowSymLinks
+              AllowOverride All
+              Require all granted
+          </Directory>
+
+          ErrorLog ${APACHE_LOG_DIR}/error.log
+          CustomLog ${APACHE_LOG_DIR}/access.log combined
+      </VirtualHost>
+
 runcmd:
   - /usr/local/bin/install_joomla.sh
+  - /usr/local/bin/setup_mysql_joomla_user.sh
+  - /usr/local/bin/install_joomla_cli.sh
+  - a2dissite 000-default.conf
+  - a2ensite joomla.conf
+  - a2enmod rewrite
+  - systemctl reload apache2
