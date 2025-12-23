@@ -1,10 +1,12 @@
 #cloud-config
+package_update: true
+package_upgrade: false
+
 packages:
-  - nodejs
-  - npm
   - nginx
-  - mysql-server
+  - mariadb-server
   - curl
+  - sqlite3
 
 write_files:
   - path: /usr/local/bin/install_ghost.sh
@@ -12,14 +14,23 @@ write_files:
     content: |
       #!/bin/bash
       set -e
+
       GHOST_VERSION=$APP_VERSION
 
       echo "Installing Ghost CLI..."
-      npm install -g ghost-cli@$APP_VERSION
+      npm install -g ghost-cli@latest
 
       mkdir -p /var/www/ghost
-      cd /var/www/ghost
-      ghost install local --no-setup
+      chown -R debian:debian /var/www/ghost
+
+      su - debian -c "
+        cd /var/www/ghost && \
+        ghost install local --no-start
+      "
 
 runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+  - apt-get install -y nodejs
   - /usr/local/bin/install_ghost.sh
+  - su - debian -c " cd /var/www/ghost && npm install sqlite3 --save"
+  - su - debian -c " cd /var/www/ghost && ghost start"
