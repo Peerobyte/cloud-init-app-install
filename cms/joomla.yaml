@@ -16,6 +16,7 @@ packages:
   - unzip
   - curl
   - mariadb-server
+  - openssl
 
 write_files:
   - path: /usr/local/bin/install_joomla.sh
@@ -24,13 +25,25 @@ write_files:
       #!/bin/bash
       set -e
 
+      # backend должен заменить literal $APP_VERSION на выбранную версию
+      if [ -z "${APP_VERSION}" ] || [ "${APP_VERSION}" = "\$APP_VERSION" ]; then
+        echo "ERROR: APP_VERSION is not set/replaced. Got: '${APP_VERSION}'"
+        exit 1
+      fi
 
-      JOOMLA_VERSION="${APP_VERSION//./-}"
-      MAJOR_VERSION=$(echo "$APP_VERSION" | cut -d'.' -f1)
+      # MAJOR_VERSION = первое число (подходит для 5.1.4 и 5-1-4)
+      MAJOR_VERSION="$(echo "$APP_VERSION" | sed -E 's/^([0-9]+).*/\1/')"
+
+      # если есть точки — конвертим в дефисы, если уже дефисы — оставляем как есть
+      if echo "$APP_VERSION" | grep -q '\.'; then
+        JOOMLA_VERSION="$(echo "$APP_VERSION" | tr '.' '-')"
+      else
+        JOOMLA_VERSION="$APP_VERSION"
+      fi
 
       echo "Installing Joomla $APP_VERSION..."
       cd /tmp
-      curl -fL https://downloads.joomla.org/cms/joomla$MAJOR_VERSION/$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip -o joomla.zip
+      curl -fL "https://downloads.joomla.org/cms/joomla$MAJOR_VERSION/$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip" -o joomla.zip
       unzip joomla.zip -d /var/www/joomla
 
       chown -R www-data:www-data /var/www/joomla
