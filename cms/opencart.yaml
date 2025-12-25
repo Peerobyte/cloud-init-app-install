@@ -23,8 +23,7 @@ write_files:
       set -e
 
       export DEBIAN_FRONTEND=noninteractive
-
-      OPENCART_VERSION="4.0.2.3"
+      OPENCART_VERSION=$APP_VERSION
       OC_PATH="/var/www/opencart"
       DB_NAME="opencart_db"
       DB_USER="opencart_user"
