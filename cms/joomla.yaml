@@ -16,7 +16,6 @@ packages:
   - unzip
   - curl
   - mariadb-server
-  - openssl
 
 write_files:
   - path: /usr/local/bin/install_joomla.sh
@@ -25,23 +24,13 @@ write_files:
       #!/bin/bash
       set -e
 
-      if [ -z "${APP_VERSION}" ]; then
-        echo "ERROR: APP_VERSION is empty"
-        exit 1
-      fi
+      JOOMLA_VERSION="$APP_VERSION"
+      MAJOR_VERSION="$(echo "$APP_VERSION" | cut -d'-' -f1)"
 
-      MAJOR_VERSION="$(echo "$APP_VERSION" | sed -E 's/^([0-9]+).*/\1/')"
-
-      if echo "$APP_VERSION" | grep -q '\.'; then
-        JOOMLA_VERSION="$(echo "$APP_VERSION" | tr '.' '-')"
-      else
-        JOOMLA_VERSION="$APP_VERSION"
-      fi
-
-      echo "Installing Joomla $APP_VERSION..."
+      echo "Installing Joomla $JOOMLA_VERSION..."
       cd /tmp
-      curl -fL "https://downloads.joomla.org/cms/joomla$MAJOR_VERSION/$JOOMLA_VERSION/Joomla_$JOOMLA_VERSION-Stable-Full_Package.zip" -o joomla.zip
-      unzip joomla.zip -d /var/www/joomla
+      curl -fL "https://downloads.joomla.org/cms/joomla${MAJOR_VERSION}/${JOOMLA_VERSION}/Joomla_${JOOMLA_VERSION}-Stable-Full_Package.zip" -o joomla.zip
+      unzip -o joomla.zip -d /var/www/joomla
 
       chown -R www-data:www-data /var/www/joomla
       chmod -R 755 /var/www/joomla
