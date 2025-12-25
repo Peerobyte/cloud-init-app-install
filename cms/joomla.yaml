@@ -24,17 +24,14 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-
-      # backend должен заменить literal $APP_VERSION на выбранную версию
-      if [ -z "${APP_VERSION}" ] || [ "${APP_VERSION}" = "\$APP_VERSION" ]; then
+      
+      if [ -z "${APP_VERSION}" ] || [ "${APP_VERSION}" = '$APP_VERSION' ]; then
         echo "ERROR: APP_VERSION is not set/replaced. Got: '${APP_VERSION}'"
         exit 1
       fi
 
-      # MAJOR_VERSION = первое число (подходит для 5.1.4 и 5-1-4)
       MAJOR_VERSION="$(echo "$APP_VERSION" | sed -E 's/^([0-9]+).*/\1/')"
 
-      # если есть точки — конвертим в дефисы, если уже дефисы — оставляем как есть
       if echo "$APP_VERSION" | grep -q '\.'; then
         JOOMLA_VERSION="$(echo "$APP_VERSION" | tr '.' '-')"
       else
