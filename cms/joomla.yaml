@@ -16,6 +16,7 @@ packages:
   - unzip
   - curl
   - mariadb-server
+  - openssl  
 
 write_files:
   - path: /usr/local/bin/install_joomla.sh
