@@ -5,28 +5,64 @@ package_upgrade: false
 
 packages:
   - apache2
-  - php
-  - php-mysql
-  - php-mbstring
-  - php-xml
-  - php-zip
-  - php-gd
-  - php-curl
-  - php-intl
   - unzip
   - curl
   - mariadb-server
-  - openssl  
+  - openssl
+  - ca-certificates
+  - lsb-release
+  - apt-transport-https
+  - gnupg
 
 write_files:
+  - path: /usr/local/bin/install_php_for_joomla.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      JOOMLA_VERSION="6-0-1"
+      MAJOR_VERSION="$(echo "$JOOMLA_VERSION" | cut -d'-' -f1)"
+
+      # Sury repo (для PHP 8.3/8.4 на Debian 12)
+      apt-get update
+      apt-get install -y ca-certificates apt-transport-https lsb-release gnupg
+      install -d /etc/apt/keyrings
+      curl -fsSL https://packages.sury.org/php/apt.gpg -o /etc/apt/keyrings/sury-php.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/sury-php.list
+      apt-get update
+
+      if [ "$MAJOR_VERSION" -ge 6 ]; then
+        PHPV="8.4"
+      else
+        PHPV="8.3"
+      fi
+
+      apt-get install -y \
+        "php${PHPV}" \
+        "libapache2-mod-php${PHPV}" \
+        "php${PHPV}-mysql" \
+        "php${PHPV}-mbstring" \
+        "php${PHPV}-xml" \
+        "php${PHPV}-zip" \
+        "php${PHPV}-gd" \
+        "php${PHPV}-curl" \
+        "php${PHPV}-intl"
+
+      a2dismod php8.2 >/dev/null 2>&1 || true
+      a2enmod "php${PHPV}" rewrite
+      update-alternatives --set php "/usr/bin/php${PHPV}" || true
+
+      systemctl restart apache2
+
   - path: /usr/local/bin/install_joomla.sh
     permissions: "0755"
     content: |
       #!/bin/bash
       set -e
 
-      JOOMLA_VERSION="$APP_VERSION"
-      MAJOR_VERSION="$(echo "$APP_VERSION" | cut -d'-' -f1)"
+      JOOMLA_VERSION="6-0-1"
+      MAJOR_VERSION="$(echo "$JOOMLA_VERSION" | cut -d'-' -f1)"
 
       echo "Installing Joomla $JOOMLA_VERSION..."
       cd /tmp
@@ -79,8 +115,6 @@ write_files:
 
       chown -R www-data:www-data /var/www/joomla
 
-      echo "Starting Joomla CLI installation..."
-
       sudo -u www-data php /var/www/joomla/installation/joomla.php install \
         --site-name="$SITE_NAME" \
         --admin-user="$ADMIN_USER" \
@@ -93,8 +127,6 @@ write_files:
         --db-pass="$DB_PASS" \
         --db-name="$DB_NAME" \
         -n
-
-      echo "Joomla CLI installation completed."
 
   - path: /etc/apache2/sites-available/joomla.conf
     permissions: "0644"
@@ -114,10 +146,10 @@ write_files:
       </VirtualHost>
 
 runcmd:
+  - /usr/local/bin/install_php_for_joomla.sh
   - /usr/local/bin/install_joomla.sh
   - /usr/local/bin/setup_mysql_joomla_user.sh
   - /usr/local/bin/install_joomla_cli.sh
   - a2dissite 000-default.conf
   - a2ensite joomla.conf
-  - a2enmod rewrite
   - systemctl reload apache2
