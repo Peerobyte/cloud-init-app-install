@@ -24,9 +24,9 @@ write_files:
     content: |
       #!/bin/bash
       set -e
-      
-      if [ -z "${APP_VERSION}" ] || [ "${APP_VERSION}" = '$APP_VERSION' ]; then
-        echo "ERROR: APP_VERSION is not set/replaced. Got: '${APP_VERSION}'"
+
+      if [ -z "${APP_VERSION}" ]; then
+        echo "ERROR: APP_VERSION is empty"
         exit 1
       fi
 
