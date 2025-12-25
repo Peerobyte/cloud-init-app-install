@@ -5,20 +5,55 @@ package_upgrade: false
 
 packages:
   - apache2
-  - php
-  - php-mysql
-  - php-mbstring
-  - php-xml
-  - php-zip
-  - php-gd
-  - php-curl
-  - php-intl
   - unzip
   - curl
   - mariadb-server
   - openssl
+  - ca-certificates
+  - lsb-release
+  - apt-transport-https
+  - gnupg
 
 write_files:
+  - path: /usr/local/bin/install_php_for_joomla.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -e
+
+      RAW_VERSION="$APP_VERSION"
+      JOOMLA_VERSION="$(echo "$RAW_VERSION" | tr '._' '-')"
+      MAJOR_VERSION="$(echo "$JOOMLA_VERSION" | cut -d'-' -f1)"
+
+      apt-get update
+      apt-get install -y ca-certificates apt-transport-https lsb-release gnupg
+      install -d /etc/apt/keyrings
+      curl -fsSL https://packages.sury.org/php/apt.gpg -o /etc/apt/keyrings/sury-php.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/sury-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/sury-php.list
+      apt-get update
+
+      if [ "$MAJOR_VERSION" -ge 6 ]; then
+        PHPV="8.4"
+      else
+        PHPV="8.3"
+      fi
+
+      apt-get install -y \
+        "php${PHPV}" \
+        "libapache2-mod-php${PHPV}" \
+        "php${PHPV}-mysql" \
+        "php${PHPV}-mbstring" \
+        "php${PHPV}-xml" \
+        "php${PHPV}-zip" \
+        "php${PHPV}-gd" \
+        "php${PHPV}-curl" \
+        "php${PHPV}-intl"
+
+      a2dismod php8.2 >/dev/null 2>&1 || true
+      a2enmod "php${PHPV}" rewrite
+      update-alternatives --set php "/usr/bin/php${PHPV}" || true
+      systemctl restart apache2
+
   - path: /usr/local/bin/install_joomla.sh
     permissions: "0755"
     content: |
@@ -48,7 +83,6 @@ write_files:
 
       DB_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
       PASS_FILE="/.mysql_pass"
-
       echo "$DB_PASS" > "$PASS_FILE"
 
       mysql -u root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -64,19 +98,17 @@ write_files:
 
       SITE_NAME="My Joomla Site"
       ADMIN_USER="admin"
+      ADMIN_EMAIL="admin@example.com"
 
       ADMIN_PASS=$(openssl rand -base64 12 | tr -d -c '[:alnum:]')
-      ADMIN_EMAIL="admin@example.com"
+      ADMIN_PASS_FILE="/.admin_pass"
+      echo "$ADMIN_PASS" > "$ADMIN_PASS_FILE"
 
       DB_TYPE="mysqli"
       DB_HOST="localhost"
       DB_USER="joomla_user"
-      DB_PASS_FILE="/.mysql_pass"
-      DB_PASS=$(cat "$DB_PASS_FILE")
+      DB_PASS=$(cat "/.mysql_pass")
       DB_NAME="joomla_db"
-
-      ADMIN_PASS_FILE="/.admin_pass"
-      echo "$ADMIN_PASS" > "$ADMIN_PASS_FILE"
 
       chown -R www-data:www-data /var/www/joomla
 
